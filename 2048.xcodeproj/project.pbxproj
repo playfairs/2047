@@ -1,0 +1,406 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 71;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* Game2048App.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* Game2048App.swift */; };
+		A10000000000000000000002 /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* GameScreen.swift */; };
+		A10000000000000000000003 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* GameViewModel.swift */; };
+		A10000000000000000000004 /* GlassButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* GlassButtonStyle.swift */; };
+		A10000000000000000000005 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* GameEngine.swift */; };
+		A10000000000000000000006 /* GameStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* GameStatistics.swift */; };
+		A10000000000000000000007 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* StatisticsView.swift */; };
+		A10000000000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* Assets.xcassets */; };
+		A20000000000000000000001 /* Game2048App.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* Game2048App.swift */; };
+		A20000000000000000000002 /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* GameScreen.swift */; };
+		A20000000000000000000003 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* GameViewModel.swift */; };
+		A20000000000000000000004 /* GlassButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* GlassButtonStyle.swift */; };
+		A20000000000000000000005 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* GameEngine.swift */; };
+		A20000000000000000000006 /* GameStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* GameStatistics.swift */; };
+		A20000000000000000000007 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* StatisticsView.swift */; };
+		A20000000000000000000009 /* assets/MacAppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* assets/MacAppIcon.icns */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B10000000000000000000001 /* Game2048App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game2048App.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* GameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScreen.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* GlassButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassButtonStyle.swift; sourceTree = "<group>"; };
+		B10000000000000000000005 /* GameEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngine.swift; sourceTree = "<group>"; };
+		B10000000000000000000006 /* GameStatistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStatistics.swift; sourceTree = "<group>"; };
+		B10000000000000000000007 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		B10000000000000000000008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10000000000000000000009 /* assets/MacAppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = assets/MacAppIcon.icns; sourceTree = "<group>"; };
+		B10000000000000000000010 /* Info-macOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-macOS.plist"; sourceTree = "<group>"; };
+		B20000000000000000000001 /* 2048.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2048.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B20000000000000000000002 /* 2048.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2048.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D40000000000000000000001 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		D40000000000000000000002 /* README.rst */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.rst; sourceTree = "<group>"; };
+		D40000000000000000000003 /* UNLICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = UNLICENSE; sourceTree = "<group>"; };
+		D40000000000000000000004 /* flake.nix */ = {isa = PBXFileReference; lastKnownFileType = text; path = flake.nix; sourceTree = "<group>"; };
+		D40000000000000000000005 /* flake.lock */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = flake.lock; sourceTree = "<group>"; };
+		D40000000000000000000006 /* justfile */ = {isa = PBXFileReference; lastKnownFileType = text; path = justfile; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C10000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C20000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D00000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				D10000000000000000000001 /* Sources */,
+				D20000000000000000000001 /* Products */,
+				D30000000000000000000001 /* Tests */,
+				D40000000000000000000001 /* Package.swift */,
+				D40000000000000000000002 /* README.rst */,
+				D40000000000000000000003 /* UNLICENSE */,
+				D40000000000000000000004 /* flake.nix */,
+				D40000000000000000000005 /* flake.lock */,
+				D40000000000000000000006 /* justfile */,
+				B10000000000000000000008 /* Assets.xcassets */,
+				B10000000000000000000009 /* assets/MacAppIcon.icns */,
+			);
+			sourceTree = "<group>";
+		};
+		D10000000000000000000001 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D11000000000000000000001 /* Game2048App */,
+				D12000000000000000000001 /* Game2048Core */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		D11000000000000000000001 /* Game2048App */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* Game2048App.swift */,
+				B10000000000000000000002 /* GameScreen.swift */,
+				B10000000000000000000003 /* GameViewModel.swift */,
+				B10000000000000000000004 /* GlassButtonStyle.swift */,
+				B10000000000000000000006 /* GameStatistics.swift */,
+				B10000000000000000000007 /* StatisticsView.swift */,
+				B10000000000000000000010 /* Info-macOS.plist */,
+			);
+			path = Game2048App;
+			sourceTree = "<group>";
+		};
+		D12000000000000000000001 /* Game2048Core */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000005 /* GameEngine.swift */,
+			);
+			path = Game2048Core;
+			sourceTree = "<group>";
+		};
+		D20000000000000000000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B20000000000000000000001 /* 2048.app */,
+				B20000000000000000000002 /* 2048.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D30000000000000000000001 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E10000000000000000000001 /* 2048-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F10000000000000000000001 /* Build configuration list for PBXNativeTarget "2048-iOS" */;
+			buildPhases = (
+				C10000000000000000000002 /* Sources */,
+				C10000000000000000000001 /* Frameworks */,
+				C10000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "2048-iOS";
+			productName = 2048;
+			productReference = B20000000000000000000001 /* 2048.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E20000000000000000000001 /* 2048-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F20000000000000000000001 /* Build configuration list for PBXNativeTarget "2048-macOS" */;
+			buildPhases = (
+				C20000000000000000000002 /* Sources */,
+				C20000000000000000000001 /* Frameworks */,
+				C20000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "2048-macOS";
+			productName = 2048;
+			productReference = B20000000000000000000002 /* 2048.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2720;
+				TargetAttributes = {
+					E10000000000000000000001 = {
+						CreatedOnToolsVersion = 27.2;
+					};
+					E20000000000000000000001 = {
+						CreatedOnToolsVersion = 27.2;
+					};
+				};
+			};
+			buildConfigurationList = F00000000000000000000001 /* Build configuration list for PBXProject "2048" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D00000000000000000000001;
+			productRefGroup = D20000000000000000000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E10000000000000000000001 /* 2048-iOS */,
+				E20000000000000000000001 /* 2048-macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000008 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C20000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20000000000000000000009 /* assets/MacAppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C10000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* Game2048App.swift in Sources */,
+				A10000000000000000000002 /* GameScreen.swift in Sources */,
+				A10000000000000000000003 /* GameViewModel.swift in Sources */,
+				A10000000000000000000004 /* GlassButtonStyle.swift in Sources */,
+				A10000000000000000000005 /* GameEngine.swift in Sources */,
+				A10000000000000000000006 /* GameStatistics.swift in Sources */,
+				A10000000000000000000007 /* StatisticsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C20000000000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20000000000000000000001 /* Game2048App.swift in Sources */,
+				A20000000000000000000002 /* GameScreen.swift in Sources */,
+				A20000000000000000000003 /* GameViewModel.swift in Sources */,
+				A20000000000000000000004 /* GlassButtonStyle.swift in Sources */,
+				A20000000000000000000005 /* GameEngine.swift in Sources */,
+				A20000000000000000000006 /* GameStatistics.swift in Sources */,
+				A20000000000000000000007 /* StatisticsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F01000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F01000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F02000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YU6NGQC444;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = 2048;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.playfairs.2048;
+				PRODUCT_NAME = 2048;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F02000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YU6NGQC444;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = 2048;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.playfairs.2048;
+				PRODUCT_NAME = 2048;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		F02000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sources/Game2048App/Info-macOS.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = 2048;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
+				MACOSX_DEPLOYMENT_TARGET = 26.6;
+				MARKETING_VERSION = 0.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.playfairs.2048;
+				PRODUCT_NAME = 2048;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F02000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Sources/Game2048App/Info-macOS.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = 2048;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
+				MACOSX_DEPLOYMENT_TARGET = 26.6;
+				MARKETING_VERSION = 0.1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.playfairs.2048;
+				PRODUCT_NAME = 2048;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F00000000000000000000001 /* Build configuration list for PBXProject "2048" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F01000000000000000000001 /* Debug */,
+				F01000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F10000000000000000000001 /* Build configuration list for PBXNativeTarget "2048-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F02000000000000000000001 /* Debug */,
+				F02000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F20000000000000000000001 /* Build configuration list for PBXNativeTarget "2048-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F02000000000000000000003 /* Debug */,
+				F02000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E00000000000000000000001 /* Project object */;
+}

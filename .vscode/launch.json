@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:2047}",
+            "name": "Debug 2048",
+            "target": "2048",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug 2048"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:2047}",
+            "name": "Release 2048",
+            "target": "2048",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release 2048"
+        }
+    ]
+}

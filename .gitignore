@@ -1,0 +1,27 @@
+# SwiftPM
+.build/
+.swiftpm/xcode/xcuserdata/
+
+# Xcode
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+
+# Generated builds and installers
+/build/
+/dist/
+/result
+*.app/
+*.dSYM/
+*.dSYM.zip
+*.ipa
+*.xcarchive/
+*.pkg
+*.dmg
+
+# macOS
+.DS_Store

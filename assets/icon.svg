@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="two" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F5E8D9"/>
+      <stop offset="1" stop-color="#E8D2BE"/>
+    </linearGradient>
+    <linearGradient id="four" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F4C58E"/>
+      <stop offset="1" stop-color="#EAA968"/>
+    </linearGradient>
+    <linearGradient id="eight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F2AB69"/>
+      <stop offset="1" stop-color="#E98C4D"/>
+    </linearGradient>
+    <linearGradient id="2048" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F5A34F"/>
+      <stop offset="1" stop-color="#E87935"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(42 42)">
+    <rect x="0" y="0" width="204" height="204" rx="34" fill="url(#two)"/>
+    <rect x="224" y="0" width="204" height="204" rx="34" fill="url(#four)"/>
+    <rect x="0" y="224" width="204" height="204" rx="34" fill="url(#eight)"/>
+    <rect x="224" y="224" width="204" height="204" rx="34" fill="url(#2048)"/>
+
+    <g fill="#776458" font-family="SF Pro Display, Helvetica, sans-serif"
+       font-weight="750" font-size="112" text-anchor="middle">
+      <text x="102" y="139">2</text>
+      <text x="326" y="139">4</text>
+      <text x="102" y="363">8</text>
+    </g>
+
+    <text x="326" y="348"
+      fill="#FFFFFF"
+      font-family="SF Pro Display, Helvetica, sans-serif"
+      font-size="66"
+      font-weight="800"
+      letter-spacing="-3"
+      text-anchor="middle">2048</text>
+  </g>
+</svg>
