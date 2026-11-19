@@ -44,7 +44,9 @@ struct AppNavigation: View {
             #if os(macOS)
                 sidebarLayout
             #else
-                if usesCompactPhoneSidebar || horizontalSizeClass == .regular {
+                if usesCompactPhoneSidebar {
+                    compactPhoneLayout
+                } else if horizontalSizeClass == .regular {
                     sidebarLayout
                 } else {
                     phoneLayout
@@ -108,6 +110,55 @@ struct AppNavigation: View {
         #if os(iOS)
             .toolbar(model.isGameActive ? .hidden : .visible, for: .navigationBar)
         #endif
+        .onReceive(NotificationCenter.default.publisher(for: .startNewGame)) { _ in
+            model.startNewGame()
+            selection = .game
+        }
+    }
+
+    private var compactPhoneLayout: some View {
+        HStack(spacing: 0) {
+            VStack(spacing: 10) {
+                ForEach(AppSection.allCases) { section in
+                    Button {
+                        selection = section
+                    } label: {
+                        Image(systemName: section.symbol)
+                            .font(.system(size: 17, weight: selection == section ? .semibold : .regular))
+                            .foregroundStyle(
+                                selection == section
+                                    ? Color.accentColor
+                                    : AppTheme.secondaryText(darkModeEnabled)
+                            )
+                            .frame(width: 42, height: 42)
+                            .contentShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
+                            .background {
+                                if selection == section {
+                                    RoundedRectangle(cornerRadius: 11, style: .continuous)
+                                        .fill(Color.accentColor.opacity(0.14))
+                                }
+                            }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(section.rawValue)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 7)
+            .padding(.top, 8)
+            .frame(minWidth: 58, maxWidth: 58, maxHeight: .infinity)
+            .background(AppTheme.surface(darkModeEnabled).opacity(0.78))
+            .overlay(alignment: .trailing) {
+                Rectangle()
+                    .fill(AppTheme.border(darkModeEnabled))
+                    .frame(width: 1)
+            }
+
+            detailContent(for: selection ?? .game)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(AppTheme.background(darkModeEnabled).ignoresSafeArea())
         .onReceive(NotificationCenter.default.publisher(for: .startNewGame)) { _ in
             model.startNewGame()
             selection = .game
