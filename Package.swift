@@ -12,7 +12,8 @@ let package = Package(
         .target(name: "Game2048Core"),
         .executableTarget(
             name: "Game2048App",
-            dependencies: ["Game2048Core"]
+            dependencies: ["Game2048Core"],
+            exclude: ["App/Info-macOS.plist"]
         ),
         .testTarget(
             name: "Game2048CoreTests",

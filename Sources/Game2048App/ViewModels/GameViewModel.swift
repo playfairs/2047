@@ -3,13 +3,15 @@ import OSLog
 import SwiftUI
 
 #if SWIFT_PACKAGE
-import Game2048Core
+    import Game2048Core
 #endif
 
 @MainActor
 final class GameViewModel: ObservableObject {
-    @Published private(set) var game = GameEngine()
+    @Published private(set) var game: GameEngine
+    @Published private(set) var boardSize: Int
     @Published private(set) var bestScore: Int
+    @Published private(set) var isGameActive = false
     @Published private(set) var continuedAfterWin = false
     @Published private(set) var statistics: PlayerStatistics
     @Published private(set) var movesThisGame = 0
@@ -17,23 +19,24 @@ final class GameViewModel: ObservableObject {
 
     private let bestScoreKey = "bestScore"
     private let statisticsKey = "playerStatistics"
+    private let boardSizeKey = "boardSize"
     private static let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "2048",
         category: "statistics"
     )
     private var gameStartedAt: Date
     private var elapsedBeforeSegment: TimeInterval = 0
-    private var timerIsRunning = true
+    private var timerIsRunning = false
     private var hasRecordedOutcome = false
 
     init() {
+        let storedBoardSize = UserDefaults.standard.integer(forKey: boardSizeKey)
+        let initialBoardSize = min(8, max(3, storedBoardSize == 0 ? 4 : storedBoardSize))
+        boardSize = initialBoardSize
+        game = GameEngine(size: initialBoardSize)
         bestScore = UserDefaults.standard.integer(forKey: bestScoreKey)
         statistics = Self.loadStatistics()
         gameStartedAt = Date()
-        statistics.gamesStarted += 1
-        statistics.totalTilesSpawned += 2
-        statistics.highestTile = max(statistics.highestTile, game.tiles.max() ?? 0)
-        persistStatistics()
     }
 
     var isShowingWin: Bool {
@@ -46,7 +49,7 @@ final class GameViewModel: ObservableObject {
     }
 
     func move(_ direction: MoveDirection) {
-        guard !game.isGameOver, !isShowingWin else { return }
+        guard isGameActive, !game.isGameOver, !isShowingWin else { return }
         var updatedGame = game
         let result = updatedGame.move(direction)
         guard result.changed else { return }
@@ -79,6 +82,10 @@ final class GameViewModel: ObservableObject {
     }
 
     func startNewGame() {
+        guard isGameActive else {
+            beginGame()
+            return
+        }
         let startDate = Date()
         if timerIsRunning {
             pauseTimer(at: startDate)
@@ -86,7 +93,7 @@ final class GameViewModel: ObservableObject {
                 statistics.gamesAbandoned += 1
             }
         }
-        game = GameEngine()
+        game = GameEngine(size: boardSize)
         continuedAfterWin = false
         movesThisGame = 0
         mergesThisGame = 0
@@ -98,6 +105,35 @@ final class GameViewModel: ObservableObject {
         statistics.totalTilesSpawned += 2
         statistics.highestTile = max(statistics.highestTile, game.tiles.max() ?? 0)
         persistStatistics()
+    }
+
+    func beginGame() {
+        guard !isGameActive else { return }
+        let startDate = Date()
+        game = GameEngine(size: boardSize)
+        movesThisGame = 0
+        mergesThisGame = 0
+        gameStartedAt = startDate
+        elapsedBeforeSegment = 0
+        timerIsRunning = true
+        hasRecordedOutcome = false
+        isGameActive = true
+        statistics.gamesStarted += 1
+        statistics.totalTilesSpawned += 2
+        statistics.highestTile = max(statistics.highestTile, game.tiles.max() ?? 0)
+        persistStatistics()
+    }
+
+    func setBoardSize(_ size: Int) {
+        let supportedSize = min(8, max(3, size))
+        guard supportedSize != boardSize else { return }
+        boardSize = supportedSize
+        UserDefaults.standard.set(supportedSize, forKey: boardSizeKey)
+        if isGameActive {
+            startNewGame()
+        } else {
+            game = GameEngine(size: supportedSize)
+        }
     }
 
     private func updateBestScore() {
@@ -148,7 +184,8 @@ final class GameViewModel: ObservableObject {
             let data = try JSONEncoder().encode(statistics)
             UserDefaults.standard.set(data, forKey: statisticsKey)
         } catch {
-            Self.logger.error("Could not save player statistics: \(String(describing: error), privacy: .public)")
+            Self.logger.error(
+                "Could not save player statistics: \(String(describing: error), privacy: .public)")
         }
     }
 

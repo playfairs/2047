@@ -15,6 +15,10 @@
 		A10000000000000000000006 /* GameStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* GameStatistics.swift */; };
 		A10000000000000000000007 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* StatisticsView.swift */; };
 		A10000000000000000000008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* Assets.xcassets */; };
+		A10000000000000000000010 /* AppNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* AppNavigation.swift */; };
+		A10000000000000000000011 /* PlayLandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* PlayLandingView.swift */; };
+		A10000000000000000000012 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* SettingsView.swift */; };
+		A10000000000000000000013 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* AppTheme.swift */; };
 		A20000000000000000000001 /* Game2048App.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* Game2048App.swift */; };
 		A20000000000000000000002 /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* GameScreen.swift */; };
 		A20000000000000000000003 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* GameViewModel.swift */; };
@@ -23,6 +27,10 @@
 		A20000000000000000000006 /* GameStatistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* GameStatistics.swift */; };
 		A20000000000000000000007 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* StatisticsView.swift */; };
 		A20000000000000000000009 /* assets/MacAppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000009 /* assets/MacAppIcon.icns */; };
+		A20000000000000000000010 /* AppNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000011 /* AppNavigation.swift */; };
+		A20000000000000000000011 /* PlayLandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* PlayLandingView.swift */; };
+		A20000000000000000000012 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* SettingsView.swift */; };
+		A20000000000000000000013 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* AppTheme.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,7 +43,11 @@
 		B10000000000000000000007 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		B10000000000000000000008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B10000000000000000000009 /* assets/MacAppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = assets/MacAppIcon.icns; sourceTree = "<group>"; };
-		B10000000000000000000010 /* Info-macOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-macOS.plist"; sourceTree = "<group>"; };
+				B10000000000000000000010 /* Info-macOS.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-macOS.plist"; sourceTree = "<group>"; };
+		B10000000000000000000011 /* AppNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppNavigation.swift; sourceTree = "<group>"; };
+		B10000000000000000000012 /* PlayLandingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLandingView.swift; sourceTree = "<group>"; };
+		B10000000000000000000013 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B10000000000000000000014 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* 2048.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2048.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000000000000000000002 /* 2048.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2048.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D40000000000000000000001 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
@@ -93,23 +105,93 @@
 		D11000000000000000000001 /* Game2048App */ = {
 			isa = PBXGroup;
 			children = (
-				B10000000000000000000001 /* Game2048App.swift */,
-				B10000000000000000000002 /* GameScreen.swift */,
-				B10000000000000000000003 /* GameViewModel.swift */,
-				B10000000000000000000004 /* GlassButtonStyle.swift */,
-				B10000000000000000000006 /* GameStatistics.swift */,
-				B10000000000000000000007 /* StatisticsView.swift */,
-				B10000000000000000000010 /* Info-macOS.plist */,
+				D13000000000000000000001 /* App */,
+				D14000000000000000000001 /* Design */,
+				D15000000000000000000001 /* Features */,
+				D16000000000000000000001 /* Models */,
+				D16500000000000000000001 /* ViewModels */,
 			);
 			path = Game2048App;
 			sourceTree = "<group>";
 		};
-		D12000000000000000000001 /* Game2048Core */ = {
+		D13000000000000000000001 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				B10000000000000000000005 /* GameEngine.swift */,
+				B10000000000000000000001 /* Game2048App.swift */,
+				B10000000000000000000011 /* AppNavigation.swift */,
+				B10000000000000000000010 /* Info-macOS.plist */,
 			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D14000000000000000000001 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000004 /* GlassButtonStyle.swift */,
+				B10000000000000000000014 /* AppTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		D15000000000000000000001 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				D15100000000000000000001 /* Game */,
+				D15200000000000000000001 /* Play */,
+				D15300000000000000000001 /* Settings */,
+				D15400000000000000000001 /* Statistics */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		D15100000000000000000001 /* Game */ = {
+			isa = PBXGroup;
+			children = (B10000000000000000000002 /* GameScreen.swift */);
+			path = Game;
+			sourceTree = "<group>";
+		};
+		D15200000000000000000001 /* Play */ = {
+			isa = PBXGroup;
+			children = (B10000000000000000000012 /* PlayLandingView.swift */);
+			path = Play;
+			sourceTree = "<group>";
+		};
+		D15300000000000000000001 /* Settings */ = {
+			isa = PBXGroup;
+			children = (B10000000000000000000013 /* SettingsView.swift */);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		D15400000000000000000001 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (B10000000000000000000007 /* StatisticsView.swift */);
+			path = Statistics;
+			sourceTree = "<group>";
+		};
+		D16000000000000000000001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000006 /* GameStatistics.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D16500000000000000000001 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (B10000000000000000000003 /* GameViewModel.swift */);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		D12000000000000000000001 /* Game2048Core */ = {
+			isa = PBXGroup;
+			children = (D17000000000000000000001 /* Engine */);
 			path = Game2048Core;
+			sourceTree = "<group>";
+		};
+		D17000000000000000000001 /* Engine */ = {
+			isa = PBXGroup;
+			children = (B10000000000000000000005 /* GameEngine.swift */);
+			path = Engine;
 			sourceTree = "<group>";
 		};
 		D20000000000000000000001 /* Products */ = {
@@ -226,6 +308,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000001 /* Game2048App.swift in Sources */,
+				A10000000000000000000010 /* AppNavigation.swift in Sources */,
+				A10000000000000000000011 /* PlayLandingView.swift in Sources */,
+				A10000000000000000000012 /* SettingsView.swift in Sources */,
+				A10000000000000000000013 /* AppTheme.swift in Sources */,
 				A10000000000000000000002 /* GameScreen.swift in Sources */,
 				A10000000000000000000003 /* GameViewModel.swift in Sources */,
 				A10000000000000000000004 /* GlassButtonStyle.swift in Sources */,
@@ -240,6 +326,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A20000000000000000000001 /* Game2048App.swift in Sources */,
+				A20000000000000000000010 /* AppNavigation.swift in Sources */,
+				A20000000000000000000011 /* PlayLandingView.swift in Sources */,
+				A20000000000000000000012 /* SettingsView.swift in Sources */,
+				A20000000000000000000013 /* AppTheme.swift in Sources */,
 				A20000000000000000000002 /* GameScreen.swift in Sources */,
 				A20000000000000000000003 /* GameViewModel.swift in Sources */,
 				A20000000000000000000004 /* GlassButtonStyle.swift in Sources */,
@@ -339,7 +429,7 @@
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Sources/Game2048App/Info-macOS.plist";
+				INFOPLIST_FILE = "Sources/Game2048App/App/Info-macOS.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = 2048;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
 				MACOSX_DEPLOYMENT_TARGET = 26.6;
@@ -357,7 +447,7 @@
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Sources/Game2048App/Info-macOS.plist";
+				INFOPLIST_FILE = "Sources/Game2048App/App/Info-macOS.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = 2048;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.board-games";
 				MACOSX_DEPLOYMENT_TARGET = 26.6;

@@ -30,32 +30,40 @@ public struct GameEngine: Sendable {
     public static let sideLength = 4
     public static let tileCount = sideLength * sideLength
 
+    public let boardSize: Int
     public private(set) var tiles: [Int]
     public private(set) var tileIDs: [UUID?]
     public private(set) var score: Int
     public private(set) var hasReached2048: Bool
+    private var successfulMoves: Int
 
     public var isGameOver: Bool {
         !hasAvailableMoves
     }
 
-    public init(random: () -> Int = { Int.random(in: 0..<1_000_000) }) {
-        tiles = Array(repeating: 0, count: Self.tileCount)
-        tileIDs = Array(repeating: nil, count: Self.tileCount)
+    public init(size: Int = Self.sideLength, random: () -> Int = { Int.random(in: 0..<1_000_000) }) {
+        precondition((3...8).contains(size))
+        boardSize = size
+        tiles = Array(repeating: 0, count: size * size)
+        tileIDs = Array(repeating: nil, count: size * size)
         score = 0
         hasReached2048 = false
+        successfulMoves = 0
         _ = spawnTile(using: random)
         _ = spawnTile(using: random)
     }
 
     public init(tiles: [Int], score: Int = 0) {
-        precondition(tiles.count == Self.tileCount)
+        let size = Int(Double(tiles.count).squareRoot())
+        precondition((3...8).contains(size) && size * size == tiles.count)
         precondition(tiles.allSatisfy { $0 >= 0 })
         precondition(score >= 0)
+        boardSize = size
         self.tiles = tiles
         tileIDs = tiles.map { $0 == 0 ? nil : UUID() }
         self.score = score
         hasReached2048 = tiles.contains { $0 >= 2048 }
+        successfulMoves = 0
     }
 
     @discardableResult
@@ -79,7 +87,7 @@ public struct GameEngine: Sendable {
         var scoreGained = 0
         var mergeCount = 0
 
-        for lane in 0..<Self.sideLength {
+        for lane in 0..<boardSize {
             let indexes = indexes(for: lane, direction: direction)
             let laneTiles = indexes.compactMap { index -> (value: Int, id: UUID)? in
                 guard tiles[index] != 0, let id = tileIDs[index] else { return nil }
@@ -89,7 +97,9 @@ public struct GameEngine: Sendable {
             var valueIndex = 0
 
             while valueIndex < laneTiles.count {
-                if valueIndex + 1 < laneTiles.count, laneTiles[valueIndex].value == laneTiles[valueIndex + 1].value {
+                if valueIndex + 1 < laneTiles.count,
+                    laneTiles[valueIndex].value == laneTiles[valueIndex + 1].value
+                {
                     let mergedValue = laneTiles[valueIndex].value * 2
                     mergedTiles.append((mergedValue, laneTiles[valueIndex].id))
                     scoreGained += mergedValue
@@ -128,6 +138,7 @@ public struct GameEngine: Sendable {
         score += scoreGained
         let reached2048 = !hasReached2048 && tiles.contains { $0 >= 2048 }
         hasReached2048 = hasReached2048 || reached2048
+        successfulMoves += 1
         let spawnedTile = spawnTile(using: random)
 
         return MoveResult(
@@ -141,16 +152,16 @@ public struct GameEngine: Sendable {
     }
 
     private var hasAvailableMoves: Bool {
-        for row in 0..<Self.sideLength {
-            for column in 0..<Self.sideLength {
-                let index = row * Self.sideLength + column
+        for row in 0..<boardSize {
+            for column in 0..<boardSize {
+                let index = row * boardSize + column
                 if tiles[index] == 0 {
                     return true
                 }
-                if column + 1 < Self.sideLength, tiles[index] == tiles[index + 1] {
+                if column + 1 < boardSize, tiles[index] == tiles[index + 1] {
                     return true
                 }
-                if row + 1 < Self.sideLength, tiles[index] == tiles[index + Self.sideLength] {
+                if row + 1 < boardSize, tiles[index] == tiles[index + boardSize] {
                     return true
                 }
             }
@@ -161,13 +172,13 @@ public struct GameEngine: Sendable {
     private func indexes(for lane: Int, direction: MoveDirection) -> [Int] {
         switch direction {
         case .left:
-            (0..<Self.sideLength).map { lane * Self.sideLength + $0 }
+            (0..<boardSize).map { lane * boardSize + $0 }
         case .right:
-            (0..<Self.sideLength).reversed().map { lane * Self.sideLength + $0 }
+            (0..<boardSize).reversed().map { lane * boardSize + $0 }
         case .up:
-            (0..<Self.sideLength).map { $0 * Self.sideLength + lane }
+            (0..<boardSize).map { $0 * boardSize + lane }
         case .down:
-            (0..<Self.sideLength).reversed().map { $0 * Self.sideLength + lane }
+            (0..<boardSize).reversed().map { $0 * boardSize + lane }
         }
     }
 
@@ -176,9 +187,38 @@ public struct GameEngine: Sendable {
         let emptyIndexes = tiles.indices.filter { tiles[$0] == 0 }
         guard !emptyIndexes.isEmpty else { return nil }
         let index = emptyIndexes[random() % emptyIndexes.count]
-        let value = random() % 10 == 0 ? 4 : 2
+        let value = spawnValue(using: random)
         tiles[index] = value
         tileIDs[index] = UUID()
         return (index, value)
+    }
+
+    private func spawnValue(using random: () -> Int) -> Int {
+        let firstTierUnlock = max(18, 48 - boardSize * 5)
+        let movesBetweenTiers = max(40, 112 - boardSize * 9)
+        let tiers: [(value: Int, unlockMove: Int, startingChance: Int, maximumChance: Int)] = [
+            (4, firstTierUnlock, 500, 10_000),
+            (8, firstTierUnlock + movesBetweenTiers, 150, 1_500),
+            (16, firstTierUnlock + movesBetweenTiers * 2, 25, 250),
+            (32, firstTierUnlock + movesBetweenTiers * 3, 5, 50),
+            (64, firstTierUnlock + movesBetweenTiers * 4, 1, 10),
+        ]
+
+        let roll = Int(random().magnitude % 100_000)
+        var cumulativeChance = 0
+
+        for tier in tiers.reversed() where successfulMoves >= tier.unlockMove {
+            let movesIntoTier = successfulMoves - tier.unlockMove
+            let ramp = min(movesBetweenTiers, movesIntoTier)
+            let chance =
+                tier.startingChance
+                + (tier.maximumChance - tier.startingChance) * ramp / movesBetweenTiers
+            cumulativeChance += chance
+            if roll < cumulativeChance {
+                return tier.value
+            }
+        }
+
+        return 2
     }
 }

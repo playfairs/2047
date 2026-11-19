@@ -1,7 +1,10 @@
 import SwiftUI
+#if os(macOS)
+    import AppKit
+#endif
 
 #if SWIFT_PACKAGE
-import Game2048Core
+    import Game2048Core
 #endif
 
 private struct BoardTile: Identifiable {
@@ -11,23 +14,22 @@ private struct BoardTile: Identifiable {
 }
 
 struct GameScreen: View {
-    @StateObject private var model = GameViewModel()
-    @State private var showsStatistics = false
-    #if os(macOS)
-    @FocusState private var isBoardFocused: Bool
-    #endif
+    @ObservedObject var model: GameViewModel
+    @Environment(\.colorScheme) private var colorScheme
+    @AppStorage("tilePalette") private var tilePaletteRawValue = TilePalette.warm.rawValue
 
     private let boardSpacing: CGFloat = 10
-    private let background = Color(red: 0.96, green: 0.95, blue: 0.91)
+    private var background: Color { AppTheme.background(colorScheme == .dark) }
+    private var tilePalette: TilePalette { TilePalette(rawValue: tilePaletteRawValue) ?? .warm }
 
     var body: some View {
         GeometryReader { geometry in
-            let boardSize = min(geometry.size.width - 44, max(240, geometry.size.height - 350), 520)
+            let boardDimension = min(geometry.size.width - 44, max(240, geometry.size.height - 300), 680)
 
             ZStack {
                 background.ignoresSafeArea()
                 RadialGradient(
-                    colors: [Color.white.opacity(0.8), background.opacity(0)],
+                    colors: [Color.white.opacity(colorScheme == .dark ? 0.06 : 0.8), background.opacity(0)],
                     center: .top,
                     startRadius: 20,
                     endRadius: 650
@@ -38,11 +40,11 @@ struct GameScreen: View {
                     VStack(spacing: 24) {
                         header
                         scores
-                        board(size: boardSize)
+                        board(size: boardDimension)
                         controls
                         timerFooter
                     }
-                    .frame(maxWidth: 560)
+                    .frame(maxWidth: 760)
                     .padding(.horizontal, 22)
                     .padding(.vertical, 28)
                     .frame(maxWidth: .infinity)
@@ -52,29 +54,12 @@ struct GameScreen: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .onReceive(NotificationCenter.default.publisher(for: .startNewGame)) { _ in
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
-                model.startNewGame()
-            }
-        }
-        .sheet(isPresented: $showsStatistics) {
-            StatisticsView(model: model)
-        }
         #if os(macOS)
-        .focusable()
-        .focused($isBoardFocused)
-        .onMoveCommand { command in
-            switch command {
-            case .left: move(.left)
-            case .right: move(.right)
-            case .up: move(.up)
-            case .down: move(.down)
-            @unknown default: break
+            .background {
+                MacArrowKeyHandler { direction in
+                    move(direction)
+                }
             }
-        }
-        .onAppear {
-            isBoardFocused = true
-        }
         #endif
     }
 
@@ -84,10 +69,10 @@ struct GameScreen: View {
                 Text("2048")
                     .font(.system(size: 43, weight: .black, design: .rounded))
                     .tracking(-2.2)
-                    .foregroundStyle(Color(red: 0.31, green: 0.29, blue: 0.25))
-                Text("Join the numbers.")
+                    .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
+                Text("merge the numbers to make bigger ones")
                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color(red: 0.53, green: 0.50, blue: 0.45))
+                    .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
             }
             Spacer(minLength: 4)
             Button {
@@ -97,7 +82,7 @@ struct GameScreen: View {
             } label: {
                 Label("New game", systemImage: "arrow.counterclockwise")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.34, green: 0.32, blue: 0.29))
+                    .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
                     .padding(.horizontal, 15)
                     .frame(height: 46)
             }
@@ -111,17 +96,9 @@ struct GameScreen: View {
             scoreCard(title: "SCORE", value: model.game.score)
             scoreCard(title: "BEST", value: model.bestScore)
             Spacer(minLength: 0)
-            Button {
-                showsStatistics = true
-            } label: {
-                Image(systemName: "chart.bar.xaxis")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(Color(red: 0.37, green: 0.34, blue: 0.29))
-                    .frame(width: 48, height: 48)
-                    .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-            }
-            .buttonStyle(GameGlassButtonStyle())
-            .accessibilityLabel("Statistics")
+            Label("\(model.boardSize) × \(model.boardSize)", systemImage: "square.grid.3x3")
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
         }
     }
 
@@ -138,7 +115,7 @@ struct GameScreen: View {
                 .accessibilityLabel("Elapsed time \(formattedGameTime(model.elapsedTime(at: context.date)))")
             }
             .font(.system(size: 13, weight: .medium, design: .rounded))
-            .foregroundStyle(Color(red: 0.48, green: 0.46, blue: 0.42))
+            .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
         }
     }
 
@@ -161,7 +138,7 @@ struct GameScreen: View {
                     LinearGradient(
                         colors: [
                             Color(red: 0.68, green: 0.61, blue: 0.52),
-                            Color(red: 0.57, green: 0.50, blue: 0.42)
+                            Color(red: 0.57, green: 0.50, blue: 0.42),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -177,7 +154,9 @@ struct GameScreen: View {
     }
 
     private func board(size: CGFloat) -> some View {
-        let cellSize = (size - boardSpacing * 5) / 4
+        let side = model.game.boardSize
+        let spacing = max(5, min(boardSpacing, size / CGFloat(side * 14)))
+        let cellSize = (size - spacing * CGFloat(side + 1)) / CGFloat(side)
         let visibleTiles = model.game.tiles.indices.compactMap { index -> BoardTile? in
             guard let id = model.game.tileIDs[index] else { return nil }
             return BoardTile(id: id, index: index, value: model.game.tiles[index])
@@ -188,10 +167,10 @@ struct GameScreen: View {
                 .fill(Color(red: 0.72, green: 0.67, blue: 0.59))
                 .shadow(color: .black.opacity(0.13), radius: 20, y: 11)
 
-            VStack(spacing: boardSpacing) {
-                ForEach(0..<4, id: \.self) { _ in
-                    HStack(spacing: boardSpacing) {
-                        ForEach(0..<4, id: \.self) { _ in
+            VStack(spacing: spacing) {
+                ForEach(0..<side, id: \.self) { _ in
+                    HStack(spacing: spacing) {
+                        ForEach(0..<side, id: \.self) { _ in
                             RoundedRectangle(cornerRadius: cellSize * 0.16, style: .continuous)
                                 .fill(Color(red: 0.83, green: 0.79, blue: 0.72).opacity(0.55))
                                 .frame(width: cellSize, height: cellSize)
@@ -199,18 +178,19 @@ struct GameScreen: View {
                     }
                 }
             }
-            .padding(boardSpacing)
+            .padding(spacing)
 
             ForEach(visibleTiles) { boardTile in
                 tile(boardTile.value, size: cellSize)
                     .position(
-                        x: boardSpacing + CGFloat(boardTile.index % 4) * (cellSize + boardSpacing) + cellSize / 2,
-                        y: boardSpacing + CGFloat(boardTile.index / 4) * (cellSize + boardSpacing) + cellSize / 2
+                        x: spacing + CGFloat(boardTile.index % side) * (cellSize + spacing) + cellSize / 2,
+                        y: spacing + CGFloat(boardTile.index / side) * (cellSize + spacing) + cellSize / 2
                     )
-                    .transition(.asymmetric(
-                        insertion: .scale(scale: 0.55).combined(with: .opacity),
-                        removal: .opacity
-                    ))
+                    .transition(
+                        .asymmetric(
+                            insertion: .scale(scale: 0.55).combined(with: .opacity),
+                            removal: .opacity
+                        ))
             }
         }
         .frame(width: size, height: size)
@@ -288,7 +268,7 @@ struct GameScreen: View {
         } label: {
             Image(systemName: symbol)
                 .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(Color(red: 0.37, green: 0.34, blue: 0.29))
+                .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
                 .frame(width: 50, height: 46)
                 .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
@@ -299,17 +279,25 @@ struct GameScreen: View {
     private var gameOverOverlay: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
-                .fill(.ultraThinMaterial.opacity(0.92))
+                .fill(AppTheme.surface(colorScheme == .dark).opacity(0.98))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                        .strokeBorder(AppTheme.border(colorScheme == .dark), lineWidth: 1)
+                }
+                .shadow(color: .black.opacity(0.16), radius: 22, y: 10)
             VStack(spacing: 12) {
                 Image(systemName: model.isShowingWin ? "sparkles" : "flag.checkered")
                     .font(.system(size: 30, weight: .semibold))
                     .foregroundStyle(Color(red: 0.66, green: 0.49, blue: 0.24))
                 Text(model.isShowingWin ? "You made it!" : "No more moves")
                     .font(.system(size: 25, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(red: 0.31, green: 0.29, blue: 0.25))
-                Text(model.isShowingWin ? "You reached 2048." : "Your score is \(model.game.score.formatted()).")
-                    .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(Color(red: 0.48, green: 0.46, blue: 0.42))
+                    .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
+                Text(
+                    model.isShowingWin
+                        ? "You reached 2048." : "Your score is \(model.game.score.formatted())."
+                )
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
                 HStack(spacing: 10) {
                     if model.isShowingWin {
                         overlayButton("Keep playing") {
@@ -323,6 +311,7 @@ struct GameScreen: View {
                 .padding(.top, 4)
             }
             .padding(24)
+            .frame(maxWidth: 340)
         }
         .padding(boardSpacing)
         .transition(.opacity.combined(with: .scale(scale: 0.96)))
@@ -334,7 +323,7 @@ struct GameScreen: View {
         } label: {
             Text(title)
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
-                .foregroundStyle(Color(red: 0.34, green: 0.32, blue: 0.29))
+                .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
                 .padding(.horizontal, 15)
                 .frame(height: 42)
         }
@@ -348,19 +337,71 @@ struct GameScreen: View {
     }
 
     private func tileColors(for value: Int) -> (background: Color, foreground: Color) {
-        switch value {
-        case 0: (Color(red: 0.83, green: 0.79, blue: 0.72).opacity(0.55), .clear)
-        case 2: (Color(red: 0.93, green: 0.90, blue: 0.84), Color(red: 0.42, green: 0.39, blue: 0.34))
-        case 4: (Color(red: 0.92, green: 0.86, blue: 0.73), Color(red: 0.42, green: 0.39, blue: 0.34))
-        case 8: (Color(red: 0.92, green: 0.67, blue: 0.46), .white)
-        case 16: (Color(red: 0.91, green: 0.54, blue: 0.36), .white)
-        case 32: (Color(red: 0.89, green: 0.43, blue: 0.34), .white)
-        case 64: (Color(red: 0.84, green: 0.30, blue: 0.23), .white)
-        case 128: (Color(red: 0.87, green: 0.70, blue: 0.36), .white)
-        case 256: (Color(red: 0.85, green: 0.65, blue: 0.25), .white)
-        case 512: (Color(red: 0.80, green: 0.58, blue: 0.18), .white)
-        case 1024: (Color(red: 0.74, green: 0.50, blue: 0.12), .white)
-        default: (Color(red: 0.68, green: 0.44, blue: 0.12), .white)
-        }
+        tilePalette.colors(for: value)
     }
 }
+
+#if os(macOS)
+    private struct MacArrowKeyHandler: NSViewRepresentable {
+        let onMove: (MoveDirection) -> Void
+
+        func makeCoordinator() -> Coordinator {
+            Coordinator(onMove: onMove)
+        }
+
+        func makeNSView(context: Context) -> NSView {
+            let view = NSView(frame: .zero)
+            context.coordinator.start()
+            return view
+        }
+
+        func updateNSView(_ nsView: NSView, context: Context) {
+        }
+
+        static func dismantleNSView(_ nsView: NSView, coordinator: Coordinator) {
+            coordinator.stop()
+        }
+
+        @MainActor
+        final class Coordinator: @unchecked Sendable {
+            let onMove: (MoveDirection) -> Void
+            private var eventMonitor: Any?
+
+            init(onMove: @escaping (MoveDirection) -> Void) {
+                self.onMove = onMove
+            }
+
+            func start() {
+                guard eventMonitor == nil else { return }
+                eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                    guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty,
+                        let direction = Self.direction(for: event.keyCode)
+                    else {
+                        return event
+                    }
+
+                    Task { @MainActor [weak self] in
+                        self?.onMove(direction)
+                    }
+                    return nil
+                }
+            }
+
+            func stop() {
+                guard let eventMonitor else { return }
+                NSEvent.removeMonitor(eventMonitor)
+                self.eventMonitor = nil
+            }
+
+            private static func direction(for keyCode: UInt16) -> MoveDirection? {
+                switch keyCode {
+                case 123: .left
+                case 124: .right
+                case 125: .down
+                case 126: .up
+                default: nil
+                }
+            }
+        }
+    }
+#endif

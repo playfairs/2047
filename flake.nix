@@ -9,6 +9,8 @@
       forAllSystems = nixpkgs.lib.genAttrs systems;
     in
     {
+      formatter = import ./nix/formatter.nix { inherit nixpkgs systems; };
+
       devShells = forAllSystems (system:
         let
           pkgs = import nixpkgs { inherit system; };
@@ -17,6 +19,7 @@
           default = pkgs.mkShell {
             packages = [
               pkgs.swift
+              pkgs.swift-format
               pkgs.just
             ];
           };
