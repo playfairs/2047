@@ -129,7 +129,6 @@ struct AppNavigation: View {
                 .navigationTitle("Play")
                 #if os(iOS)
                     .navigationBarTitleDisplayMode(.inline)
-                    .toolbar(model.isGameActive ? .hidden : .visible, for: .tabBar)
                     .toolbar(model.isGameActive ? .hidden : .visible, for: .navigationBar)
                 #endif
             }
