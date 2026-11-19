@@ -24,7 +24,7 @@ final class GameViewModel: ObservableObject {
         subsystem: Bundle.main.bundleIdentifier ?? "2048",
         category: "statistics"
     )
-    private var gameStartedAt: Date
+    private(set) var gameStartedAt: Date
     private var elapsedBeforeSegment: TimeInterval = 0
     private var timerIsRunning = false
     private var hasRecordedOutcome = false

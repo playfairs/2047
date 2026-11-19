@@ -26,6 +26,10 @@ struct AppNavigation: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
+    #if os(macOS)
+        @StateObject private var discordRPCManager = DiscordRPCManager()
+        @AppStorage("discordRPCEnabled") private var discordRPCEnabled = false
+    #endif
 
     private var isPhoneDevice: Bool {
         #if os(iOS)
@@ -56,8 +60,32 @@ struct AppNavigation: View {
         .onAppear {
             if isPhoneDevice, model.boardSize > 4 { model.setBoardSize(4) }
         }
+        #if os(macOS)
+            .onAppear(perform: updateDiscordPresence)
+            .onChange(of: discordRPCEnabled) { _, _ in updateDiscordPresence() }
+            .onChange(of: model.isGameActive) { _, _ in updateDiscordPresence() }
+            .onChange(of: model.gameStartedAt) { _, _ in updateDiscordPresence() }
+            .onChange(of: model.game.score) { _, _ in updateDiscordPresence() }
+            .onChange(of: model.bestScore) { _, _ in updateDiscordPresence() }
+            .onDisappear {
+                discordRPCManager.stop()
+            }
+            .environmentObject(discordRPCManager)
+        #endif
         .preferredColorScheme(darkModeEnabled ? .dark : .light)
     }
+
+    #if os(macOS)
+        private func updateDiscordPresence() {
+            discordRPCManager.update(
+                enabled: discordRPCEnabled,
+                isPlaying: model.isGameActive,
+                score: model.game.score,
+                bestScore: model.bestScore,
+                gameStartedAt: model.gameStartedAt
+            )
+        }
+    #endif
 
     private var sidebarLayout: some View {
         NavigationSplitView {

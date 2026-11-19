@@ -21,6 +21,9 @@ struct GameScreen: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AppStorage("tilePalette") private var tilePaletteRawValue = TilePalette.warm.rawValue
+    #if os(macOS)
+        @AppStorage("repeatArrowKeysEnabled") private var repeatArrowKeysEnabled = false
+    #endif
 
     private let boardSpacing: CGFloat = 10
     private var background: Color { AppTheme.background(colorScheme == .dark) }
@@ -119,7 +122,7 @@ struct GameScreen: View {
         }
         #if os(macOS)
             .background {
-                MacArrowKeyHandler { direction in
+                MacArrowKeyHandler(repeatEnabled: repeatArrowKeysEnabled) { direction in
                     move(direction)
                 }
             }
@@ -437,10 +440,11 @@ struct GameScreen: View {
 
 #if os(macOS)
     private struct MacArrowKeyHandler: NSViewRepresentable {
+        let repeatEnabled: Bool
         let onMove: (MoveDirection) -> Void
 
         func makeCoordinator() -> Coordinator {
-            Coordinator(onMove: onMove)
+            Coordinator(repeatEnabled: repeatEnabled, onMove: onMove)
         }
 
         func makeNSView(context: Context) -> NSView {
@@ -450,6 +454,7 @@ struct GameScreen: View {
         }
 
         func updateNSView(_ nsView: NSView, context: Context) {
+            context.coordinator.update(repeatEnabled: repeatEnabled, onMove: onMove)
         }
 
         static func dismantleNSView(_ nsView: NSView, coordinator: Coordinator) {
@@ -458,33 +463,106 @@ struct GameScreen: View {
 
         @MainActor
         final class Coordinator: @unchecked Sendable {
-            let onMove: (MoveDirection) -> Void
+            private var onMove: (MoveDirection) -> Void
+            private var repeatEnabled: Bool
             private var eventMonitor: Any?
+            private var activeObserver: NSObjectProtocol?
+            private var heldKeyCodes = Set<UInt16>()
+            private var repeatTimer: Timer?
 
-            init(onMove: @escaping (MoveDirection) -> Void) {
+            init(repeatEnabled: Bool, onMove: @escaping (MoveDirection) -> Void) {
+                self.repeatEnabled = repeatEnabled
                 self.onMove = onMove
             }
 
             func start() {
                 guard eventMonitor == nil else { return }
-                eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-                    guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty,
-                        let direction = Self.direction(for: event.keyCode)
-                    else {
+                eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown, .keyUp]) {
+                    [weak self] event in
+                    guard let self, let direction = Self.direction(for: event.keyCode) else {
                         return event
                     }
 
-                    Task { @MainActor [weak self] in
-                        self?.onMove(direction)
+                    if event.type == .keyUp {
+                        if self.repeatEnabled {
+                            self.heldKeyCodes.remove(event.keyCode)
+                            if self.heldKeyCodes.isEmpty {
+                                self.stopRepeating()
+                            }
+                            return nil
+                        }
+                        return event
                     }
+
+                    guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty else {
+                        return event
+                    }
+
+                    if self.repeatEnabled {
+                        if self.heldKeyCodes.insert(event.keyCode).inserted {
+                            self.onMove(direction)
+                            self.startRepeating()
+                        }
+                        return nil
+                    }
+
+                    self.onMove(direction)
                     return nil
+                }
+                activeObserver = NotificationCenter.default.addObserver(
+                    forName: NSApplication.didResignActiveNotification,
+                    object: nil,
+                    queue: .main
+                ) { [weak self] _ in
+                    MainActor.assumeIsolated {
+                        self?.heldKeyCodes.removeAll()
+                        self?.stopRepeating()
+                    }
                 }
             }
 
+            func update(repeatEnabled: Bool, onMove: @escaping (MoveDirection) -> Void) {
+                self.onMove = onMove
+                guard self.repeatEnabled != repeatEnabled else { return }
+                self.repeatEnabled = repeatEnabled
+                heldKeyCodes.removeAll()
+                stopRepeating()
+            }
+
             func stop() {
-                guard let eventMonitor else { return }
-                NSEvent.removeMonitor(eventMonitor)
-                self.eventMonitor = nil
+                if let eventMonitor {
+                    NSEvent.removeMonitor(eventMonitor)
+                    self.eventMonitor = nil
+                }
+                if let activeObserver {
+                    NotificationCenter.default.removeObserver(activeObserver)
+                    self.activeObserver = nil
+                }
+                heldKeyCodes.removeAll()
+                stopRepeating()
+            }
+
+            private func startRepeating() {
+                guard repeatTimer == nil else { return }
+                let timer = Timer(timeInterval: 0.12, repeats: true) { [weak self] _ in
+                    MainActor.assumeIsolated {
+                        guard let self else { return }
+                        for keyCode in [UInt16(123), 124, 125, 126]
+                            where self.heldKeyCodes.contains(keyCode)
+                        {
+                            if let direction = Self.direction(for: keyCode) {
+                                self.onMove(direction)
+                            }
+                        }
+                    }
+                }
+                RunLoop.main.add(timer, forMode: .common)
+                repeatTimer = timer
+            }
+
+            private func stopRepeating() {
+                repeatTimer?.invalidate()
+                repeatTimer = nil
             }
 
             private static func direction(for keyCode: UInt16) -> MoveDirection? {

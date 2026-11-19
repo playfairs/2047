@@ -19,6 +19,7 @@
 		A10000000000000000000011 /* PlayLandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* PlayLandingView.swift */; };
 		A10000000000000000000012 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* SettingsView.swift */; };
 		A10000000000000000000013 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* AppTheme.swift */; };
+		A10000000000000000000014 /* DiscordRPCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* DiscordRPCClient.swift */; };
 		A20000000000000000000001 /* Game2048App.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* Game2048App.swift */; };
 		A20000000000000000000002 /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* GameScreen.swift */; };
 		A20000000000000000000003 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* GameViewModel.swift */; };
@@ -31,6 +32,7 @@
 		A20000000000000000000011 /* PlayLandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000012 /* PlayLandingView.swift */; };
 		A20000000000000000000012 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000013 /* SettingsView.swift */; };
 		A20000000000000000000013 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000014 /* AppTheme.swift */; };
+		A20000000000000000000014 /* DiscordRPCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000015 /* DiscordRPCClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,7 @@
 		B10000000000000000000012 /* PlayLandingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLandingView.swift; sourceTree = "<group>"; };
 		B10000000000000000000013 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B10000000000000000000014 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		B10000000000000000000015 /* DiscordRPCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscordRPCClient.swift; sourceTree = "<group>"; };
 		B20000000000000000000001 /* 2048.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2048.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B20000000000000000000002 /* 2048.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2048.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D40000000000000000000001 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
@@ -119,6 +122,7 @@
 			children = (
 				B10000000000000000000001 /* Game2048App.swift */,
 				B10000000000000000000011 /* AppNavigation.swift */,
+				B10000000000000000000015 /* DiscordRPCClient.swift */,
 				B10000000000000000000010 /* Info-macOS.plist */,
 			);
 			path = App;
@@ -312,6 +316,7 @@
 				A10000000000000000000011 /* PlayLandingView.swift in Sources */,
 				A10000000000000000000012 /* SettingsView.swift in Sources */,
 				A10000000000000000000013 /* AppTheme.swift in Sources */,
+				A10000000000000000000014 /* DiscordRPCClient.swift in Sources */,
 				A10000000000000000000002 /* GameScreen.swift in Sources */,
 				A10000000000000000000003 /* GameViewModel.swift in Sources */,
 				A10000000000000000000004 /* GlassButtonStyle.swift in Sources */,
@@ -330,6 +335,7 @@
 				A20000000000000000000011 /* PlayLandingView.swift in Sources */,
 				A20000000000000000000012 /* SettingsView.swift in Sources */,
 				A20000000000000000000013 /* AppTheme.swift in Sources */,
+				A20000000000000000000014 /* DiscordRPCClient.swift in Sources */,
 				A20000000000000000000002 /* GameScreen.swift in Sources */,
 				A20000000000000000000003 /* GameViewModel.swift in Sources */,
 				A20000000000000000000004 /* GlassButtonStyle.swift in Sources */,

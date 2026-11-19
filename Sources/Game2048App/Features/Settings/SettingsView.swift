@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(macOS)
+    import AppKit
+#endif
 #if os(iOS)
     import UIKit
 #endif
@@ -8,6 +11,12 @@ struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
     @AppStorage("tilePalette") private var tilePaletteRawValue = TilePalette.warm.rawValue
+    #if os(macOS)
+        @EnvironmentObject private var discordRPCManager: DiscordRPCManager
+        @AppStorage("secretSettingsUnlocked") private var secretSettingsUnlocked = false
+        @AppStorage("repeatArrowKeysEnabled") private var repeatArrowKeysEnabled = false
+        @AppStorage("discordRPCEnabled") private var discordRPCEnabled = false
+    #endif
 
     private var availableSizes: [Int] {
         #if os(iOS)
@@ -49,6 +58,38 @@ struct SettingsView: View {
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
                         .strokeBorder(AppTheme.border(colorScheme == .dark), lineWidth: 1)
                 }
+
+                #if os(macOS)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Discord Rich Presence", systemImage: "gamecontroller.fill")
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
+                            .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
+
+                        Toggle("Show my game activity on Discord", isOn: $discordRPCEnabled)
+                            .toggleStyle(.switch)
+
+                        Text(discordRPCManager.statusMessage)
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
+
+                        Text(
+                            "Shows your score and high score while playing, or “In Menus” when the app is open. Requires Discord desktop and “Display current activity as a status message” enabled under Discord’s Activity Privacy settings."
+                        )
+                        .font(.system(size: 13, weight: .regular, design: .rounded))
+                        .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
+                        .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(18)
+                    .frame(maxWidth: 520, alignment: .leading)
+                    .background(
+                        AppTheme.surface(colorScheme == .dark),
+                        in: RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            .strokeBorder(AppTheme.border(colorScheme == .dark), lineWidth: 1)
+                    }
+                #endif
 
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Tile colors", systemImage: "paintpalette.fill")
@@ -113,6 +154,33 @@ struct SettingsView: View {
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
                         .strokeBorder(AppTheme.border(colorScheme == .dark), lineWidth: 1)
                 }
+
+                #if os(macOS)
+                    if secretSettingsUnlocked {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label("Secret settings", systemImage: "sparkles")
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
+
+                            Toggle("Repeat moves while holding arrow keys", isOn: $repeatArrowKeysEnabled)
+                                .toggleStyle(.switch)
+
+                            Text("Hold one or more arrow keys to repeat those moves.")
+                                .font(.system(size: 13, weight: .regular, design: .rounded))
+                                .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
+                        }
+                        .padding(18)
+                        .frame(maxWidth: 520, alignment: .leading)
+                        .background(
+                            AppTheme.surface(colorScheme == .dark),
+                            in: RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        )
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                .strokeBorder(AppTheme.border(colorScheme == .dark), lineWidth: 1)
+                        }
+                    }
+                #endif
             }
             .frame(maxWidth: 620, alignment: .leading)
             .padding(24)
@@ -120,5 +188,79 @@ struct SettingsView: View {
         }
         .scrollIndicators(.hidden)
         .background(AppTheme.background(colorScheme == .dark).ignoresSafeArea())
+        #if os(macOS)
+            .overlay {
+                MacShiftSequenceDetector {
+                    secretSettingsUnlocked = true
+                }
+                .frame(width: 1, height: 1)
+                .opacity(0)
+                .allowsHitTesting(false)
+            }
+        #endif
     }
 }
+
+#if os(macOS)
+    private struct MacShiftSequenceDetector: NSViewRepresentable {
+        let onUnlock: () -> Void
+
+        func makeCoordinator() -> Coordinator {
+            Coordinator(onUnlock: onUnlock)
+        }
+
+        func makeNSView(context: Context) -> NSView {
+            let view = NSView(frame: .zero)
+            context.coordinator.start()
+            return view
+        }
+
+        func updateNSView(_ nsView: NSView, context: Context) {
+            context.coordinator.onUnlock = onUnlock
+        }
+
+        static func dismantleNSView(_ nsView: NSView, coordinator: Coordinator) {
+            coordinator.stop()
+        }
+
+        @MainActor
+        final class Coordinator: @unchecked Sendable {
+            var onUnlock: () -> Void
+            private var eventMonitor: Any?
+            private var shiftPresses: [Date] = []
+
+            init(onUnlock: @escaping () -> Void) {
+                self.onUnlock = onUnlock
+            }
+
+            func start() {
+                guard eventMonitor == nil else { return }
+                eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) {
+                    [weak self] event in
+                    guard let self,
+                        (event.keyCode == 56 || event.keyCode == 60),
+                        event.modifierFlags.contains(.shift)
+                    else {
+                        return event
+                    }
+
+                    let now = Date()
+                    self.shiftPresses.removeAll { now.timeIntervalSince($0) > 2 }
+                    self.shiftPresses.append(now)
+                    if self.shiftPresses.count >= 5 {
+                        self.shiftPresses.removeAll()
+                        self.onUnlock()
+                    }
+                    return event
+                }
+            }
+
+            func stop() {
+                guard let eventMonitor else { return }
+                NSEvent.removeMonitor(eventMonitor)
+                self.eventMonitor = nil
+                shiftPresses.removeAll()
+            }
+        }
+    }
+#endif
