@@ -1,15 +1,17 @@
 import SwiftUI
+#if os(iOS)
+    import UIKit
+#endif
 
 struct SettingsView: View {
     @ObservedObject var model: GameViewModel
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
     @AppStorage("tilePalette") private var tilePaletteRawValue = TilePalette.warm.rawValue
 
     private var availableSizes: [Int] {
         #if os(iOS)
-            horizontalSizeClass == .compact ? [3, 4] : Array(3...8)
+            UIDevice.current.userInterfaceIdiom == .phone ? [3, 4] : Array(3...8)
         #else
             Array(3...8)
         #endif

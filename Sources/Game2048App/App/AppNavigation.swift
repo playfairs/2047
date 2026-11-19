@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(iOS)
+    import UIKit
+#endif
 
 private enum AppSection: String, CaseIterable, Identifiable {
     case game = "Play"
@@ -21,19 +24,35 @@ struct AppNavigation: View {
     @State private var selection: AppSection? = .game
     @State private var phoneSelection: AppSection = .game
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AppStorage("darkModeEnabled") private var darkModeEnabled = false
+
+    private var isPhoneDevice: Bool {
+        #if os(iOS)
+            UIDevice.current.userInterfaceIdiom == .phone
+        #else
+            false
+        #endif
+    }
+
+    private var usesCompactPhoneSidebar: Bool {
+        isPhoneDevice && verticalSizeClass == .compact
+    }
 
     var body: some View {
         Group {
             #if os(macOS)
                 sidebarLayout
             #else
-                if horizontalSizeClass == .regular {
+                if usesCompactPhoneSidebar || horizontalSizeClass == .regular {
                     sidebarLayout
                 } else {
                     phoneLayout
                 }
             #endif
+        }
+        .onAppear {
+            if isPhoneDevice, model.boardSize > 4 { model.setBoardSize(4) }
         }
         .preferredColorScheme(darkModeEnabled ? .dark : .light)
     }
@@ -45,30 +64,50 @@ struct AppNavigation: View {
                     Button {
                         selection = section
                     } label: {
-                        Text(section.rawValue)
-                            .font(.system(size: 14, weight: selection == section ? .semibold : .medium))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical, 7)
-                            .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
-                            .background {
-                                if selection == section {
-                                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                        .fill(Color.accentColor.opacity(0.12))
-                                }
+                        Group {
+                            if usesCompactPhoneSidebar {
+                                Image(systemName: section.symbol)
+                                    .font(
+                                        .system(size: 17, weight: selection == section ? .semibold : .regular)
+                                    )
+                                    .frame(maxWidth: .infinity, minHeight: 42)
+                            } else {
+                                Text(section.rawValue)
+                                    .font(
+                                        .system(size: 14, weight: selection == section ? .semibold : .medium)
+                                    )
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
+                        }
+                        .accessibilityLabel(section.rawValue)
+                        .padding(.vertical, 7)
+                        .contentShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+                        .background {
+                            if selection == section {
+                                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                    .fill(Color.accentColor.opacity(0.12))
+                            }
+                        }
                     }
                     .buttonStyle(.plain)
                     .listRowSeparator(.hidden)
                 }
             }
             .listStyle(.sidebar)
-            .navigationTitle("2048")
-            .navigationSplitViewColumnWidth(min: 180, ideal: 210, max: 260)
+            .navigationTitle(usesCompactPhoneSidebar ? "" : "2048")
+            .navigationSplitViewColumnWidth(
+                min: usesCompactPhoneSidebar ? 64 : 180,
+                ideal: usesCompactPhoneSidebar ? 68 : 210,
+                max: usesCompactPhoneSidebar ? 72 : 260
+            )
         } detail: {
             detailContent(for: selection ?? .game)
         }
         .navigationSplitViewStyle(.balanced)
         .background(AppTheme.background(darkModeEnabled).ignoresSafeArea())
+        #if os(iOS)
+            .toolbar(model.isGameActive ? .hidden : .visible, for: .navigationBar)
+        #endif
         .onReceive(NotificationCenter.default.publisher(for: .startNewGame)) { _ in
             model.startNewGame()
             selection = .game
@@ -91,6 +130,7 @@ struct AppNavigation: View {
                 #if os(iOS)
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar(model.isGameActive ? .hidden : .visible, for: .tabBar)
+                    .toolbar(model.isGameActive ? .hidden : .visible, for: .navigationBar)
                 #endif
             }
             .tabItem { Label("Play", systemImage: AppSection.game.symbol) }
@@ -120,9 +160,6 @@ struct AppNavigation: View {
         .onReceive(NotificationCenter.default.publisher(for: .startNewGame)) { _ in
             model.startNewGame()
             phoneSelection = .game
-        }
-        .onAppear {
-            if model.boardSize > 4 { model.setBoardSize(4) }
         }
     }
 

@@ -2,6 +2,9 @@ import SwiftUI
 #if os(macOS)
     import AppKit
 #endif
+#if os(iOS)
+    import UIKit
+#endif
 
 #if SWIFT_PACKAGE
     import Game2048Core
@@ -16,11 +19,26 @@ private struct BoardTile: Identifiable {
 struct GameScreen: View {
     @ObservedObject var model: GameViewModel
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @AppStorage("tilePalette") private var tilePaletteRawValue = TilePalette.warm.rawValue
 
     private let boardSpacing: CGFloat = 10
     private var background: Color { AppTheme.background(colorScheme == .dark) }
     private var tilePalette: TilePalette { TilePalette(rawValue: tilePaletteRawValue) ?? .warm }
+    private var directionButtonSize: CGFloat {
+        #if os(iOS)
+            verticalSizeClass == .compact ? 42 : 50
+        #else
+            50
+        #endif
+    }
+    private var directionButtonSpacing: CGFloat {
+        #if os(iOS)
+            verticalSizeClass == .compact ? 8 : 12
+        #else
+            12
+        #endif
+    }
     private var newGameButtonTitle: String {
         #if os(iOS)
             "Restart"
@@ -32,7 +50,10 @@ struct GameScreen: View {
     var body: some View {
         GeometryReader { geometry in
             #if os(iOS)
-                let boardDimension = min(geometry.size.width - 32, max(220, geometry.size.height - 250), 560)
+                let boardDimension: CGFloat =
+                    verticalSizeClass == .compact
+                    ? min(geometry.size.height - 28, max(180, geometry.size.width - 280), 460)
+                    : min(geometry.size.width - 32, max(220, geometry.size.height - 250), 560)
             #else
                 let boardDimension = min(geometry.size.width - 44, max(240, geometry.size.height - 300), 680)
             #endif
@@ -48,17 +69,33 @@ struct GameScreen: View {
                 .ignoresSafeArea()
 
                 #if os(iOS)
-                    VStack(spacing: 12) {
-                        header
-                        scores
-                        board(size: boardDimension)
-                        controls
-                        timerFooter
+                    if verticalSizeClass == .compact {
+                        HStack(spacing: 16) {
+                            VStack(alignment: .leading, spacing: 10) {
+                                header
+                                compactScores
+                                controls
+                                timerFooter
+                            }
+                            .frame(width: 220)
+
+                            board(size: boardDimension)
+                        }
+                        .padding(.horizontal, 12)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        VStack(spacing: 12) {
+                            header
+                            scores
+                            board(size: boardDimension)
+                            controls
+                            timerFooter
+                        }
+                        .frame(maxWidth: 560)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    .frame(maxWidth: 560)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 #else
                     ScrollView(.vertical) {
                         VStack(spacing: 24) {
@@ -99,9 +136,19 @@ struct GameScreen: View {
                     #endif
                     .tracking(-2.2)
                     .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
-                Text("merge the numbers to make bigger ones")
-                    .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
+                #if os(iOS)
+                    if verticalSizeClass != .compact {
+                        Text("Merge the numbers to make bigger ones")
+                            .font(.system(size: 15, weight: .medium, design: .rounded))
+                            .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                #else
+                    Text("Merge the numbers to make bigger ones")
+                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                        .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
+                #endif
             }
             Spacer(minLength: 4)
             Button {
@@ -127,6 +174,18 @@ struct GameScreen: View {
             Spacer(minLength: 0)
             Label("\(model.boardSize) × \(model.boardSize)", systemImage: "square.grid.3x3")
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
+        }
+    }
+
+    private var compactScores: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                scoreCard(title: "SCORE", value: model.game.score)
+                scoreCard(title: "BEST", value: model.bestScore)
+            }
+            Label("\(model.boardSize) × \(model.boardSize) board", systemImage: "square.grid.3x3")
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
         }
     }
@@ -284,7 +343,7 @@ struct GameScreen: View {
     }
 
     private var controls: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: directionButtonSpacing) {
             directionButton(.left, symbol: "arrow.left")
             directionButton(.up, symbol: "arrow.up")
             directionButton(.down, symbol: "arrow.down")
@@ -302,7 +361,7 @@ struct GameScreen: View {
             Image(systemName: symbol)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
-                .frame(width: 50, height: 46)
+                .frame(width: directionButtonSize, height: directionButtonSize - 4)
                 .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         }
         .buttonStyle(GameGlassButtonStyle())
