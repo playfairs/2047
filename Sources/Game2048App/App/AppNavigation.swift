@@ -90,6 +90,7 @@ struct AppNavigation: View {
                 .navigationTitle("Play")
                 #if os(iOS)
                     .navigationBarTitleDisplayMode(.inline)
+                    .toolbar(model.isGameActive ? .hidden : .visible, for: .tabBar)
                 #endif
             }
             .tabItem { Label("Play", systemImage: AppSection.game.symbol) }

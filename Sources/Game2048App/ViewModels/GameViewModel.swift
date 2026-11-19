@@ -111,6 +111,7 @@ final class GameViewModel: ObservableObject {
         guard !isGameActive else { return }
         let startDate = Date()
         game = GameEngine(size: boardSize)
+        continuedAfterWin = false
         movesThisGame = 0
         mergesThisGame = 0
         gameStartedAt = startDate
@@ -121,6 +122,19 @@ final class GameViewModel: ObservableObject {
         statistics.gamesStarted += 1
         statistics.totalTilesSpawned += 2
         statistics.highestTile = max(statistics.highestTile, game.tiles.max() ?? 0)
+        persistStatistics()
+    }
+
+    func endGame() {
+        guard isGameActive else { return }
+        let endDate = Date()
+        if timerIsRunning {
+            pauseTimer(at: endDate)
+            if !hasRecordedOutcome {
+                statistics.gamesAbandoned += 1
+            }
+        }
+        isGameActive = false
         persistStatistics()
     }
 

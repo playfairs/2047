@@ -21,10 +21,21 @@ struct GameScreen: View {
     private let boardSpacing: CGFloat = 10
     private var background: Color { AppTheme.background(colorScheme == .dark) }
     private var tilePalette: TilePalette { TilePalette(rawValue: tilePaletteRawValue) ?? .warm }
+    private var newGameButtonTitle: String {
+        #if os(iOS)
+            "Restart"
+        #else
+            "New game"
+        #endif
+    }
 
     var body: some View {
         GeometryReader { geometry in
-            let boardDimension = min(geometry.size.width - 44, max(240, geometry.size.height - 300), 680)
+            #if os(iOS)
+                let boardDimension = min(geometry.size.width - 32, max(220, geometry.size.height - 250), 560)
+            #else
+                let boardDimension = min(geometry.size.width - 44, max(240, geometry.size.height - 300), 680)
+            #endif
 
             ZStack {
                 background.ignoresSafeArea()
@@ -36,21 +47,35 @@ struct GameScreen: View {
                 )
                 .ignoresSafeArea()
 
-                ScrollView(.vertical) {
-                    VStack(spacing: 24) {
+                #if os(iOS)
+                    VStack(spacing: 12) {
                         header
                         scores
                         board(size: boardDimension)
                         controls
                         timerFooter
                     }
-                    .frame(maxWidth: 760)
-                    .padding(.horizontal, 22)
-                    .padding(.vertical, 28)
-                    .frame(maxWidth: .infinity)
-                }
-                .scrollIndicators(.hidden)
-                .scrollBounceBehavior(.basedOnSize)
+                    .frame(maxWidth: 560)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                #else
+                    ScrollView(.vertical) {
+                        VStack(spacing: 24) {
+                            header
+                            scores
+                            board(size: boardDimension)
+                            controls
+                            timerFooter
+                        }
+                        .frame(maxWidth: 760)
+                        .padding(.horizontal, 22)
+                        .padding(.vertical, 28)
+                        .frame(maxWidth: .infinity)
+                    }
+                    .scrollIndicators(.hidden)
+                    .scrollBounceBehavior(.basedOnSize)
+                #endif
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -67,7 +92,11 @@ struct GameScreen: View {
         HStack(alignment: .center, spacing: 16) {
             VStack(alignment: .leading, spacing: 3) {
                 Text("2048")
-                    .font(.system(size: 43, weight: .black, design: .rounded))
+                    #if os(iOS)
+                        .font(.system(size: 34, weight: .black, design: .rounded))
+                    #else
+                        .font(.system(size: 43, weight: .black, design: .rounded))
+                    #endif
                     .tracking(-2.2)
                     .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
                 Text("merge the numbers to make bigger ones")
@@ -80,11 +109,11 @@ struct GameScreen: View {
                     model.startNewGame()
                 }
             } label: {
-                Label("New game", systemImage: "arrow.counterclockwise")
+                Label(newGameButtonTitle, systemImage: "arrow.counterclockwise")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
-                    .padding(.horizontal, 15)
-                    .frame(height: 46)
+                    .padding(.horizontal, 12)
+                    .frame(height: 42)
             }
             .buttonStyle(GameGlassButtonStyle())
             .accessibilityHint("Starts a new game and resets the current score")
@@ -105,7 +134,11 @@ struct GameScreen: View {
     private var timerFooter: some View {
         TimelineView(.periodic(from: .now, by: 1)) { context in
             HStack {
-                Text("Swipe or use the arrow keys")
+                #if os(iOS)
+                    Text("Swipe to move")
+                #else
+                    Text("Use the arrow keys to move")
+                #endif
                 Spacer()
                 Label(
                     formattedGameTime(model.elapsedTime(at: context.date)),
@@ -285,12 +318,12 @@ struct GameScreen: View {
                         .strokeBorder(AppTheme.border(colorScheme == .dark), lineWidth: 1)
                 }
                 .shadow(color: .black.opacity(0.16), radius: 22, y: 10)
-            VStack(spacing: 12) {
+            VStack(spacing: 7) {
                 Image(systemName: model.isShowingWin ? "sparkles" : "flag.checkered")
-                    .font(.system(size: 30, weight: .semibold))
+                    .font(.system(size: 24, weight: .semibold))
                     .foregroundStyle(Color(red: 0.66, green: 0.49, blue: 0.24))
                 Text(model.isShowingWin ? "You made it!" : "No more moves")
-                    .font(.system(size: 25, weight: .bold, design: .rounded))
+                    .font(.system(size: 21, weight: .bold, design: .rounded))
                     .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
                 Text(
                     model.isShowingWin
@@ -298,20 +331,21 @@ struct GameScreen: View {
                 )
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(AppTheme.secondaryText(colorScheme == .dark))
-                HStack(spacing: 10) {
-                    if model.isShowingWin {
-                        overlayButton("Keep playing") {
-                            model.continuePlaying()
-                        }
-                    }
-                    overlayButton("New game") {
-                        model.startNewGame()
+                if model.isShowingWin {
+                    overlayButton("Keep playing") {
+                        model.continuePlaying()
                     }
                 }
-                .padding(.top, 4)
+                overlayButton("Restart") {
+                    model.startNewGame()
+                }
+                overlayButton("Main menu") {
+                    model.endGame()
+                }
+                .padding(.top, 2)
             }
-            .padding(24)
-            .frame(maxWidth: 340)
+            .padding(16)
+            .frame(maxWidth: 300)
         }
         .padding(boardSpacing)
         .transition(.opacity.combined(with: .scale(scale: 0.96)))
@@ -324,8 +358,8 @@ struct GameScreen: View {
             Text(title)
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundStyle(AppTheme.primaryText(colorScheme == .dark))
-                .padding(.horizontal, 15)
-                .frame(height: 42)
+                .frame(maxWidth: .infinity)
+                .frame(height: 36)
         }
         .buttonStyle(GameGlassButtonStyle())
     }
