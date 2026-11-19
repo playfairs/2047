@@ -55,7 +55,7 @@ struct GameScreen: View {
                     ? min(geometry.size.height - 28, max(180, geometry.size.width - 280), 460)
                     : min(geometry.size.width - 32, max(220, geometry.size.height - 250), 560)
             #else
-                let boardDimension = min(geometry.size.width - 44, max(240, geometry.size.height - 300), 680)
+                let boardDimension = min(geometry.size.width - 44, max(200, geometry.size.height - 360), 680)
             #endif
 
             ZStack {
@@ -93,12 +93,13 @@ struct GameScreen: View {
                         }
                         .frame(maxWidth: 560)
                         .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(.top, 0)
+                        .padding(.bottom, 4)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                     }
                 #else
                     ScrollView(.vertical) {
-                        VStack(spacing: 24) {
+                        VStack(spacing: 18) {
                             header
                             scores
                             board(size: boardDimension)
@@ -107,7 +108,7 @@ struct GameScreen: View {
                         }
                         .frame(maxWidth: 760)
                         .padding(.horizontal, 22)
-                        .padding(.vertical, 28)
+                        .padding(.vertical, 20)
                         .frame(maxWidth: .infinity)
                     }
                     .scrollIndicators(.hidden)
